@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --calendar-wall: #d9d9d9;
+  --calendar-blue: #1da1f2;
+  --calendar-text: #333333;
+  --calendar-muted: #cccccc;
 }
 
 @theme inline {
@@ -22,5 +26,136 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Physical wall calendar — vertical sheet, spiral, blue accent */
+.calendar-root {
+  background: linear-gradient(180deg, #e8e8e8 0%, #d4d4d4 100%);
+  color: var(--calendar-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.calendar-sheet {
+  overflow: hidden;
+  border-radius: 0 0 0.5rem 0.5rem; /* flat top (sheet edge), rounded bottom corners */
+  background: #ffffff;
+  /* Initial shadow; month flip overrides via inline style while animating */
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.16),
+    0 12px 28px -10px rgba(0, 0, 0, 0.1),
+    0 1px 0 0 rgba(0, 0, 0, 0.06);
+}
+
+/* 3D month flip — perspective on stage; motion driven by JS + CSS transitions */
+.calendar-flip-stage {
+  perspective: 2000px;
+  perspective-origin: 50% 0%;
+}
+
+.calendar-flip-inner {
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.calendar-flip-inner.is-flipping {
+  pointer-events: none;
+}
+
+.calendar-lower {
+  min-height: 0;
+}
+
+.calendar-grid-panel {
+  background: #ffffff;
+}
+
+.calendar-nav-btn {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition;
+}
+
+.calendar-nav-btn:hover {
+  @apply border-[#1da1f2]/40 bg-sky-50 text-[#1da1f2];
+}
+
+.calendar-nav-btn:active {
+  @apply scale-[0.97];
+}
+
+.calendar-chip-ghost {
+  @apply text-[#1da1f2] underline decoration-[#1da1f2]/30 underline-offset-2 transition hover:decoration-[#1da1f2];
+}
+
+/* Lined “paper” fields */
+.notes-lined-field {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.35rem 0.25rem 0;
+  font-size: 0.875rem;
+  line-height: 1.75rem;
+  color: var(--calendar-text);
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(1.75rem - 1px),
+    #e5e5e5 calc(1.75rem - 1px),
+    #e5e5e5 1.75rem
+  );
+  outline: none;
+}
+
+.notes-lined-field:focus {
+  background-color: rgba(29, 161, 242, 0.06);
+}
+
+.notes-range-placeholder {
+  border-radius: 0.375rem;
+  border: 1px dashed #d0d0d0;
+  background: #fafafa;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #888888;
+}
+
+.calendar-day-cell {
+  @apply relative flex aspect-square w-full flex-col items-center justify-center rounded-lg text-sm font-semibold transition-colors;
+}
+
+.calendar-day-cell:not(:disabled) {
+  @apply cursor-pointer hover:bg-neutral-100/90;
+}
+
+.calendar-day-today {
+  @apply z-1 text-[#333333] ring-2 ring-[#1da1f2] ring-offset-2 ring-offset-white;
+}
+
+.calendar-day-pending-start {
+  @apply z-1 bg-sky-50 text-[#333333] ring-2 ring-[#1da1f2]/60 ring-offset-2 ring-offset-white;
+}
+
+.calendar-day-range {
+  @apply bg-sky-100/90 text-[#333333];
+}
+
+.calendar-day-start {
+  @apply rounded-lg rounded-r-sm bg-[#1da1f2] text-white hover:bg-[#1da1f2];
+}
+
+.calendar-day-end {
+  @apply rounded-lg rounded-l-sm bg-[#0d7cc4] text-white hover:bg-[#0d7cc4];
+}
+
+.calendar-day-mid {
+  @apply rounded-none;
+}
+
+.calendar-day-single {
+  @apply rounded-lg bg-[#1da1f2] text-white hover:bg-[#1da1f2];
 }
